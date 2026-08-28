@@ -4,7 +4,7 @@ Deterministic speech bubbles and readable dialogue for finished 2×2 comic pages
 
 This node solves a common diffusion-comic problem: the artwork may look right, but generated lettering is misspelled, duplicated, mixed with Japanese glyphs, or printed on top of earlier text. Instead of asking the image model to spell dialogue, this extension adds clean bubbles and real font-rendered text **after VAE Decode**.
 
-![Four-panel lettering preview](assets/demo_four_panel.png)
+![Four-panel lettering preview](demo_four_panel.png)
 
 ## Features
 
@@ -51,7 +51,7 @@ Checkpoint + prompts → sampler → VAE Decode
                               └─ bubble_mask   → optional post-processing
 ```
 
-An editable example workflow is included at [`examples/Illustrious_ComicFactory_DeterministicLettering_v10.json`](examples/Illustrious_ComicFactory_DeterministicLettering_v10.json).
+An editable example workflow is included at [`Illustrious_ComicFactory_DeterministicLettering_v10.json`](Illustrious_ComicFactory_DeterministicLettering_v10.json).
 
 The example may reference checkpoint or LoRA filenames from its original environment. Select equivalent locally installed models before queuing it. This repository does not redistribute models.
 
