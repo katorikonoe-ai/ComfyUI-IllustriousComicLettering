@@ -1,0 +1,8 @@
+.git/
+.github/
+__pycache__/
+*.pyc
+test_node.py
+CONTRIBUTING.md
+SECURITY.md
+GITHUB_RELEASE_CHECKLIST.md

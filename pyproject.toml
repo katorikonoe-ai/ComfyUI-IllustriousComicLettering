@@ -1,0 +1,20 @@
+[project]
+name = "comfyui-illustrious-comic-lettering"
+description = "Deterministic speech bubbles and readable dialogue for finished 2x2 comic pages in ComfyUI."
+version = "1.0.0"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+    "Pillow>=10.0",
+    "numpy>=1.24",
+]
+
+[project.urls]
+Repository = "https://github.com/katorikonoe-ai/ComfyUI-IllustriousComicLettering"
+Documentation = "https://github.com/katorikonoe-ai/ComfyUI-IllustriousComicLettering#readme"
+Issues = "https://github.com/katorikonoe-ai/ComfyUI-IllustriousComicLettering/issues"
+
+[tool.comfy]
+PublisherId = "katorikonoe"
+DisplayName = "Illustrious Comic Lettering"
+Icon = ""
