@@ -11,7 +11,7 @@ This node solves a common diffusion-comic problem: the artwork may look right, b
 - Exactly one configurable bubble per panel in a fixed 2×2 page.
 - Deterministic Pillow-based rendering—no hidden AI service or extra model.
 - Automatic line wrapping and font-size reduction.
-- Padding, panel-safe clamping, outline width, colors, and vertical placement controls.
+- Padding, panel-safe clamping, bubble-width, tail-size, outline, color, and vertical-position controls.
 - Speaker-side controls; bubbles are placed opposite the speaker and tails point back toward them.
 - Outputs both the finished `IMAGE` and a combined `MASK` for optional compositing or refinement.
 - Works after any image model or checkpoint; designed around Illustrious XL comic workflows.
@@ -85,12 +85,31 @@ If the generated art already contains text, this node cannot semantically erase 
 | `panel_1_speaker` … `panel_4_speaker` | `left`, `center`, or `right`; controls bubble placement and tail direction. |
 | `font_name` | Font filename or accessible font path. Falls back to common system fonts. |
 | `font_size` / `min_font_size` | Preferred and lowest automatic lettering size. |
-| `max_lines` | Maximum wrapped lines in each bubble. |
-| `bubble_padding` | Space around fitted text. |
-| `panel_margin` | Minimum distance from panel edges. |
-| `bubble_y_percent` | Vertical bubble position inside each panel. |
-| `outline_width` | Bubble border thickness. |
+| `padding` | Space around fitted text. |
+| `outer_margin` / `gutter` | Geometry used to locate the four source panels. |
+| `panel_safe_margin` | Horizontal safety distance from panel edges. |
+| `bubble_width_limit` | Maximum bubble width as a percentage of panel width. Start at `45`. |
+| `tail_length` / `tail_width` | Tail size in pixels. Recommended starting values: `42` / `22`. |
+| `bubble_top_offset` | Distance from the top of each panel in pixels. Start at `26`. |
+| `border_width` | Bubble border thickness. |
 | color inputs | Text, fill, and outline colors in hex format. |
+
+Recommended v1.1 starting preset for a 1600×2200 page:
+
+```text
+font_size: 34
+min_font_size: 16
+padding: 24
+outer_margin: 45
+gutter: 24
+panel_safe_margin: 34
+border_width: 3
+font_name: DejaVuSans.ttf
+bubble_width_limit: 45
+tail_length: 42
+tail_width: 22
+bubble_top_offset: 26
+```
 
 Keep dialogue concise. Four to seven words per panel is the most reliable range.
 

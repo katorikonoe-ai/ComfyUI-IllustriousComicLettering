@@ -102,18 +102,22 @@ def _panel_boxes(width, height, outer_margin, gutter):
 
 
 def _draw_bubble(layer, panel, text, speaker_side, font_size, min_font_size, padding,
-                 panel_safe_margin, border_width, fill, outline, text_color, font_name):
+                 panel_safe_margin, border_width, fill, outline, text_color, font_name,
+                 bubble_width_limit=45, tail_length=42, tail_width=22,
+                 bubble_top_offset=26):
     if not (text or "").strip():
         return
     draw = ImageDraw.Draw(layer)
     x0, y0, x1, y1 = panel
     panel_w, panel_h = x1 - x0, y1 - y0
-    max_text_w = max(80, int(panel_w * 0.58) - padding * 2)
+    width_ratio = min(90, max(20, bubble_width_limit)) / 100.0
+    max_bubble_w = max(80, min(panel_w - panel_safe_margin * 2, int(panel_w * width_ratio)))
+    max_text_w = max(40, max_bubble_w - padding * 2)
     max_text_h = max(50, int(panel_h * 0.28) - padding * 2)
     font, lines, text_w, text_h, line_h, line_spacing = _fit_text(
         draw, text, font_size, min_font_size, max_text_w, max_text_h, 0.16, font_name
     )
-    bubble_w = min(panel_w - panel_safe_margin * 2, text_w + padding * 2)
+    bubble_w = min(max_bubble_w, text_w + padding * 2)
     bubble_h = min(panel_h - panel_safe_margin * 2, text_h + padding * 2)
 
     # Place the bubble opposite the speaker so it does not cover the face.
@@ -126,23 +130,32 @@ def _draw_bubble(layer, panel, text, speaker_side, font_size, min_font_size, pad
     else:
         bx = x0 + (panel_w - bubble_w) // 2
         tail_x = x0 + panel_w // 2
-    by = y0 + panel_safe_margin
-    tail_y = min(y1 - panel_safe_margin, by + bubble_h + max(18, int(panel_h * 0.08)))
+    max_by = max(y0, y1 - panel_safe_margin - bubble_h)
+    by = min(max_by, y0 + bubble_top_offset)
     box = (bx, by, bx + bubble_w, by + bubble_h)
 
     draw.ellipse(box, fill=fill, outline=outline, width=border_width)
     center_x = bx + bubble_w / 2
     center_y = by + bubble_h / 2
-    angle = math.atan2(tail_y - center_y, tail_x - center_x)
-    spread = 0.16
+    target_y = min(y1 - panel_safe_margin, by + bubble_h + max(1, tail_length))
+    angle = math.atan2(target_y - center_y, tail_x - center_x)
     radius_x, radius_y = bubble_w / 2, bubble_h / 2
     def edge(a):
         scale = 1.0 / math.sqrt((math.cos(a) / radius_x) ** 2 + (math.sin(a) / radius_y) ** 2)
         return center_x + math.cos(a) * scale, center_y + math.sin(a) * scale
-    p1, p2 = edge(angle - spread), edge(angle + spread)
-    draw.polygon([p1, (tail_x, tail_y), p2], fill=fill)
+    edge_x, edge_y = edge(angle)
+    direction_x, direction_y = math.cos(angle), math.sin(angle)
+    tip_x = edge_x + direction_x * tail_length
+    tip_y = edge_y + direction_y * tail_length
+    tip_x = min(x1 - panel_safe_margin, max(x0 + panel_safe_margin, tip_x))
+    tip_y = min(y1 - panel_safe_margin, max(y0 + panel_safe_margin, tip_y))
+    half_width = tail_width / 2.0
+    tangent_x, tangent_y = -direction_y, direction_x
+    p1 = (edge_x + tangent_x * half_width, edge_y + tangent_y * half_width)
+    p2 = (edge_x - tangent_x * half_width, edge_y - tangent_y * half_width)
+    draw.polygon([p1, (tip_x, tip_y), p2], fill=fill)
     if border_width:
-        draw.line([p1, (tail_x, tail_y), p2], fill=outline, width=border_width, joint="curve")
+        draw.line([p1, (tip_x, tip_y), p2], fill=outline, width=border_width, joint="curve")
 
     cursor_y = by + (bubble_h - text_h) / 2
     for line in lines:
@@ -184,7 +197,13 @@ class IllustriousComicLettering4Panel:
                 "fill_color": ("STRING", {"default": "#FFFFFF"}),
                 "border_color": ("STRING", {"default": "#111111"}),
                 "text_color": ("STRING", {"default": "#111111"}),
-                "font_name": ("STRING", {"default": "DejaVuSans-Bold.ttf"}),
+                "font_name": ("STRING", {"default": "DejaVuSans.ttf"}),
+                "bubble_width_limit": ("INT", {"default": 45, "min": 20, "max": 90,
+                                                "tooltip": "Maximum bubble width as a percentage of panel width."}),
+                "tail_length": ("INT", {"default": 42, "min": 0, "max": 240}),
+                "tail_width": ("INT", {"default": 22, "min": 4, "max": 120}),
+                "bubble_top_offset": ("INT", {"default": 26, "min": 0, "max": 512,
+                                              "tooltip": "Distance from the top of each panel in pixels."}),
             }
         }
 
@@ -197,7 +216,8 @@ class IllustriousComicLettering4Panel:
                panel_1_speaker, panel_2_speaker, panel_3_speaker, panel_4_speaker,
                font_size, min_font_size, padding, outer_margin, gutter,
                panel_safe_margin, border_width, fill_color, border_color,
-               text_color, font_name):
+               text_color, font_name, bubble_width_limit=45, tail_length=42,
+               tail_width=22, bubble_top_offset=26):
         output, masks = [], []
         fill = ImageColor.getcolor(fill_color, "RGBA")
         outline = ImageColor.getcolor(border_color, "RGBA")
@@ -212,6 +232,7 @@ class IllustriousComicLettering4Panel:
                 _draw_bubble(
                     layer, panel, text, side, font_size, min_font_size, padding,
                     panel_safe_margin, border_width, fill, outline, color, font_name,
+                    bubble_width_limit, tail_length, tail_width, bubble_top_offset,
                 )
             composed = Image.alpha_composite(base, layer)
             output.append(_pil_to_tensor(composed))

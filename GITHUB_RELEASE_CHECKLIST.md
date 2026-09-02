@@ -2,8 +2,8 @@
 
 ## Required edits
 
-- [ ] Replace `YOUR_GITHUB_USERNAME` in `README.md` and `pyproject.toml`.
-- [ ] Replace `YOUR_COMFY_PUBLISHER_ID` in `pyproject.toml` if publishing to the Comfy Registry.
+- [x] GitHub username is set to `katorikonoe-ai`.
+- [x] Comfy Registry publisher ID is set to `katorikonoe`.
 - [ ] Replace the copyright holder in `LICENSE` if desired.
 - [ ] Confirm no checkpoint, LoRA, API key, private image, or restricted asset is included.
 
@@ -21,7 +21,7 @@ git init
 git add .
 git commit -m "Initial release: deterministic four-panel comic lettering"
 git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/ComfyUI-IllustriousComicLettering.git
+git remote add origin https://github.com/katorikonoe-ai/ComfyUI-IllustriousComicLettering.git
 git push -u origin main
 ```
 

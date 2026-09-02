@@ -33,7 +33,8 @@ def main():
     ):
         _draw_bubble(
             layer, panel, text, side, 48, 20, 30, 28, 4,
-            "#FFFFFF", "#111111", "#111111", "DejaVuSans-Bold.ttf",
+            "#FFFFFF", "#111111", "#111111", "DejaVuSans.ttf",
+            45, 42, 22, 26,
         )
     output = Image.alpha_composite(page.convert("RGBA"), layer).convert("RGB")
     output.save(Path(__file__).parent / "test_output.png")

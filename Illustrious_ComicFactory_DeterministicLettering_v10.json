@@ -1532,17 +1532,21 @@
         "right",
         "left",
         "right",
-        42,
-        20,
-        28,
+        34,
+        16,
+        24,
         45,
         24,
-        26,
-        4,
+        34,
+        3,
         "#FFFFFF",
         "#111111",
         "#111111",
-        "DejaVuSans-Bold.ttf"
+        "DejaVuSans.ttf",
+        45,
+        42,
+        22,
+        26
       ],
       "title": "EDIT HERE - EXACT DIALOGUE FOR ALL 4 PANELS"
     }
